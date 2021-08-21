@@ -53,6 +53,28 @@ Scans a Go module directory. To scan the current directory recursively, use goka
 		debug, _ := cmd.Flags().GetBool("debug")
 		util.InitConfig(globals, sarif, verbose, debug, yml)
 		
+		//if a non-flag arg was passed in, it should be a filepath/modulepath
+		if len(args) != 0 {
+			//if we change to the module dir, then we want to Change our args to just the base (last section)
+			isFile, err := util.PathIsFile(args[0])
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			//if the path is a file we set the current working dir to the directory where it's located
+			// then we set the argument to ./filename
+			if isFile{
+				util.ChangeToFileDir(args[0])
+				basepath := util.GetPathBase(args[0])
+				args = append([]string{}, basepath)
+			} else {
+			//if path is dir, we change the working dir to it and set args to blank
+				util.ChangeToModuleDir(args[0])
+				args = []string{}
+			}
+		}
+
 		// If gomodname flag is set to a non-empty value then clone the repo and scan it
 		if len(gomodname) != 0 {
 			moddirname, err := util.ParseModuleName(gomodname)
@@ -66,7 +88,15 @@ Scans a Go module directory. To scan the current directory recursively, use goka
 				fmt.Print(err)
 				os.Exit(1)
 			}
-			// If passing in a module - the other arguments are wiped out!
+
+			// when passing a module, we need to set the current directory to the newly cloned repo
+			// and wipe out other arguments with a recurisve call to the new dir.
+			err = os.Chdir(moddirname)
+			if err != nil {
+				fmt.Print(err)
+				os.Exit(1)
+			}
+
 			args = append([]string{}, moddirname+"/...")
 		}
 

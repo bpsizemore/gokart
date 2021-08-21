@@ -20,7 +20,6 @@ package analyzers
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -50,46 +49,6 @@ func Scan(args []string) {
 		util.InitSarifReporting()
 	} else {
 		fmt.Printf("\nRevving engines VRMMM VRMMM\n3...2...1...Go!\n")
-	}
-	// If we're given a target path, we do some slight changes to make sure that
-	// gokart will behave as expected. Specifically we turn the path into an absolute
-	// path, and then we append /... to the end to make sure the package loading is recursive.
-	// Finally we update the current working directory to the target
-	// In order to not cause issues we set the working directory back after we are done scanning.
-	if len(args) > 0 {
-		target_path := args[0]
-		if !filepath.IsAbs(target_path) {
-			target_path, _ = filepath.Abs(args[0])
-			args[0] = target_path
-		}
-
-		// Fix up the path to make sure it is pointed at a directory (even if given a file)
-		fileInfo, err := os.Stat(strings.TrimRight(target_path, "."))
-		if err != nil {
-			log.Fatal(err)
-		}
-		target_dir := filepath.Dir(target_path)
-		if fileInfo.IsDir() {
-			// Adding an extra / to the end of the path to make sure we still target the directory
-			target_dir = filepath.Dir(target_path + "/")
-		}
-
-		if !strings.HasSuffix(target_path, "...") {
-			target_path = filepath.Join(target_dir, "...")
-			args[0] = target_path
-			if util.Config.Debug {
-				fmt.Printf("Setting target_path to %s\n", args[0])
-			}
-		}
-
-		err = os.Chdir(strings.TrimRight(target_path, "."))
-		if err != nil {
-			log.Fatal(err)
-		}
-		cwd, _ := os.Getwd()
-		if util.Config.Debug {
-			fmt.Printf("Current working directory is %s\n", cwd)
-		}
 	}
 
 	generic_analyzers := LoadGenericAnalyzers()
