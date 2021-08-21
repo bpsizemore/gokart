@@ -75,7 +75,7 @@ Scans a Go module directory. To scan the current directory recursively, use goka
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			args = append(args,"./remoteModule/..." )
+			args = append(args,"./"+dirName+"/..." )
 		}
 		if len(args) == 0 {
 			// recursively scan the current directory if no arguments are passed in
