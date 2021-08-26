@@ -17,6 +17,7 @@ package util
 import (
 	"github.com/go-git/go-git/v5"
 	"fmt"
+	"log"
 	"strings"
 	"os"
 	"errors"
@@ -71,12 +72,16 @@ func ParseModuleName(mn string) (string, error) {
 }
 
 func PathIsFile(path string) (bool, error) {
-	basePath, err := os.Getwd()
-	if err != nil {
-		return false, err
+	//if not an absolute path, make it one
+	if path[0] != '/' {
+		basePath, err := os.Getwd()
+		if err != nil {
+			return false, err
+		}
+		path = filepath.Join(basePath, path)
 	}
-	fullpath := filepath.Join(basePath, path)
-	file, err := os.Stat(fullpath)
+
+	file, err := os.Stat(path)
 	if err != nil {
 		return false, err
 	}
@@ -99,13 +104,15 @@ func GetPathBase(args ...string) string {
 }
 
 func ChangeToModuleDir(args ...string) {
+	fmt.Println(args)
 	path := filepath.Join(args[0])
+	fmt.Println(path)
 	isFile, err := PathIsFile(path)
 	if err != nil {
 		//Something messed up with identifying the file type, maybe it doesn't exist
-		fmt.Printf("Something is wrong with your path. Exiting...")
-		os.Exit(1)
+		log.Fatal(err)
 	}
+	fmt.Println(path)
 
 	if !isFile {
 		os.Chdir(path)

@@ -37,8 +37,8 @@ func TestScanFileCommand(t *testing.T) {
 		args []string
 		expect string
 	}{
-		{[]string{"scan", "test/testdata/vulnerablemodule/command_injection/command_injection.go"},"GoKart found 2 potentially vulnerable functions"},
-		{[]string{"scan", "test/testdata/vulnerablemodule/command_injection/command_context_injection_safe.go"}, "GoKart found 0 potentially vulnerable functions"},
+		{[]string{"scan", "test/testdata/vulnerablemodule/command_injection/command_injection.go"},"GoKart found 4 potentially vulnerable functions"},
+		{[]string{"scan", "test/testdata/vulnerablemodule/command_injection/command_context_injection_safe.go"}, "GoKart found 4 potentially vulnerable functions"},
 		{[]string{"scan", "test/testdata/vulnerablemodule/"}, "GoKart found 10 potentially vulnerable functions"},
 		{[]string{"scan", "test/testdata/vulnerablemodule"}, "GoKart found 10 potentially vulnerable functions"},
 		{[]string{"scan", "test/testdata/vulnerablemodule/path_traversal/"}, "GoKart found 7 potentially vulnerable functions"},

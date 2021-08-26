@@ -39,11 +39,6 @@ var Analyzers = []*analysis.Analyzer{
 }
 
 func Scan(args []string) {
-	//Get the current dir so we can reset it later.
-	current_dir, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("Unable to get current dir.\n")
-	}
 
 	if util.Config.OutputSarif {
 		util.InitSarifReporting()
@@ -102,5 +97,4 @@ func Scan(args []string) {
 		fmt.Println("\nRace Complete! Analysis took", scan_time, "and", util.FilesFound, "Go files were scanned (including imported packages)")
 		fmt.Printf("GoKart found %d potentially vulnerable functions\n", count)
 	}
-	os.Chdir(current_dir)
 }

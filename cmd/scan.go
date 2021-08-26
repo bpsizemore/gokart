@@ -20,6 +20,7 @@ package cmd
 import (
 	"os"
 	"fmt"
+	"path/filepath"
 
 	"github.com/praetorian-inc/gokart/analyzers"
 	"github.com/praetorian-inc/gokart/util"
@@ -59,15 +60,22 @@ Scans a Go module directory. To scan the current directory recursively, use goka
 			isFile, err := util.PathIsFile(args[0])
 			if err != nil {
 				fmt.Println(err)
+				fmt.Println("yeet")
 				os.Exit(1)
 			}
 
 			//if the path is a file we set the current working dir to the directory where it's located
 			// then we set the argument to ./filename
 			if isFile{
-				util.ChangeToFileDir(args[0])
-				basepath := util.GetPathBase(args[0])
-				args = append([]string{}, basepath)
+				absFileDir,err := filepath.Abs(filepath.Dir(args[0]))
+				if err != nil {
+					log.Fatal(err)
+				}
+				util.ChangeToModuleDir(absFileDir)
+				fmt.Println("yeet2")
+				args = append([]string{}, absFileDir + "/...")
+				fmt.Println(args)
+
 			} else {
 			//if path is dir, we change the working dir to it and set args to blank
 				util.ChangeToModuleDir(args[0])
@@ -90,7 +98,7 @@ Scans a Go module directory. To scan the current directory recursively, use goka
 			}
 
 			// when passing a module, we need to set the current directory to the newly cloned repo
-			// and wipe out other arguments with a recurisve call to the new dir.
+			// and wipe out other arguments with a recursive call to the new dir.
 			err = os.Chdir(moddirname)
 			if err != nil {
 				fmt.Print(err)
